@@ -1,8 +1,10 @@
 package pl.dkowal.view;
 
-import pl.dkowal.database.DBManager;
 import pl.dkowal.model.Lesson;
 import pl.dkowal.model.Student;
+import pl.dkowal.repository.ConnectionConfiguration;
+import pl.dkowal.repository.LessonRepositoryImpl;
+import pl.dkowal.repository.StudentRepositoryImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -22,14 +25,18 @@ public class WelcomeView extends javax.swing.JFrame {
     private javax.swing.JButton selectStudentButton;
     private javax.swing.JComboBox studentsComboBox;
     private Student student;
-    private DBManager dbm;
     private Student fakeStudent = new Student("-- Wybierz ucznia --");
+    private LessonRepositoryImpl lessonRepository;
+    private StudentRepositoryImpl studentRepository;
 
 
-    public SelectView() {
+    public WelcomeView() {
         initComponents();
     }
     private void initComponents() {
+        lessonRepository = new LessonRepositoryImpl();
+        studentRepository = new StudentRepositoryImpl();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - this.getWidth()) / 4);
@@ -70,7 +77,11 @@ public class WelcomeView extends javax.swing.JFrame {
         selectStudentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectStudentButtonActionPerformed(e);
+                try {
+                    selectStudentButtonActionPerformed(e);
+                } catch (SQLException e1) {
+                    System.out.println("SELECT STUDENT ERROR: " + e1.getMessage());
+                }
             }
         });
 
@@ -150,12 +161,10 @@ public class WelcomeView extends javax.swing.JFrame {
             System.out.println("Selected fakeStudent");
             JOptionPane.showMessageDialog(null, "Wybierz studenta!");
         } else {
-            System.out.println(student.getName());
+            //System.out.println(student.getName());
             int studentId = student.getId();
-            dbm = new DBManager();
-            dbm.openConnection();
-            dbm.addLesson(student.getId());
-            Lesson newLesson = dbm.getLastLessonOfStudent(studentId);
+            lessonRepository.addLesson(student.getId());
+            Lesson newLesson = lessonRepository.getLastLessonOfStudent(studentId);
             new MainView(newLesson, student);
             System.out.println("Lesson added");
             selectStudentButtonActionPerformed(e);
@@ -167,12 +176,10 @@ public class WelcomeView extends javax.swing.JFrame {
     }
 
     private void studentsComboBoxItemListener(ItemEvent e) {
-        dbm = new DBManager();
-        dbm.openConnection();
-
         Student selectedStudent = (Student) studentsComboBox.getSelectedItem();
+
         try {
-            ArrayList<Lesson> lessons = dbm.getLessonsOfStudent(selectedStudent.getId());
+            ArrayList<Lesson> lessons = lessonRepository.getLessonsOfStudent(selectedStudent.getId());
             if(!lessons.isEmpty())
                 lessonsComboBox.setModel(new DefaultComboBoxModel<>(lessons.toArray()));
             else
@@ -189,12 +196,10 @@ public class WelcomeView extends javax.swing.JFrame {
 
     }
 
-    private void selectStudentButtonActionPerformed(ActionEvent e) {
+    private void selectStudentButtonActionPerformed(ActionEvent e) throws SQLException {
         addLessonButton.setEnabled(true);
-        dbm = new DBManager();
-        dbm.openConnection();
         ArrayList<Student> students;
-        students = dbm.getAllStudents();
+        students = studentRepository.getAllStudents();
         students.add(0, fakeStudent);
         studentsComboBox.setModel(new DefaultComboBoxModel<>(students.toArray()));
         lessonsComboBox.setVisible(true);
@@ -206,9 +211,18 @@ public class WelcomeView extends javax.swing.JFrame {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SelectView().setVisible(true);
+                try {
+                    File directory = new File("C:\\data\\Files");
+                    if(!directory.exists())
+                        directory.mkdir();
+                    ConnectionConfiguration.createTables();
+                } catch (ClassNotFoundException e) {
+                    System.out.println(e.getMessage());
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+                new WelcomeView().setVisible(true);
             }
         });
     }
-
 }

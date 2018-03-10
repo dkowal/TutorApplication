@@ -2,13 +2,13 @@ package pl.dkowal.repository;
 
 import pl.dkowal.model.Lesson;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface LessonRepository {
-    ArrayList<Lesson> getLessonsOfStudent(int studentId);
-    Lesson getLastLessonOfStudent(int studId);
-    void addLesson(int studentId);
-    void editLesson(Lesson lesson);
-    String setNextNumberOfLesson(int studentId, int i);
-
+    void addLesson(int studentId) throws SQLException;
+    void editLesson(Lesson lesson) throws SQLException;
+    String setNextNumberOfLesson(int studentId, int i) throws SQLException;
+    ArrayList<Lesson> getLessonsOfStudent(int studentId) throws SQLException;
+    Lesson getLastLessonOfStudent(int studId) throws SQLException;
 }

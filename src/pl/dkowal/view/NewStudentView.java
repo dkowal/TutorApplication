@@ -1,11 +1,12 @@
 package pl.dkowal.view;
 
-import pl.dkowal.database.DBManager;
 import pl.dkowal.model.Student;
+import pl.dkowal.repository.StudentRepositoryImpl;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 
 public class NewStudentView extends JDialog {
 
@@ -22,14 +23,17 @@ public class NewStudentView extends JDialog {
     private JLabel priceLabel;
     private JTextField priceTextField;
     private JLabel plnLabel;
+    private StudentRepositoryImpl studentRepository;
 
-    public NewStudentView(SelectView parent, boolean modal) {
+    public NewStudentView(WelcomeView parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
     }
 
     private void initComponents() {
+
+        studentRepository = new StudentRepositoryImpl();
 
         nameLabel = new JLabel();
         nameTextField = new JTextField();
@@ -59,7 +63,7 @@ public class NewStudentView extends JDialog {
 
         lessonDateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         lessonDateLabel.setText("Data lekcji:");
-        lessonDateTextField.setText("rrrr-mm-dd");
+        lessonDateTextField.setText("rrrr-mm-dd gg:mm:00.00");
 
         priceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         priceLabel.setText("Cena:");
@@ -67,7 +71,11 @@ public class NewStudentView extends JDialog {
         addButton.setText("Dodaj");
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                addButtonActionPerformed(evt);
+                try {
+                    addButtonActionPerformed(evt);
+                } catch (SQLException e) {
+                    System.out.println("Add student button: " + e.getMessage());
+                }
             }
         });
 
@@ -148,15 +156,13 @@ public class NewStudentView extends JDialog {
         pack();
     }
 
-    private void addButtonActionPerformed(ActionEvent evt) {
+    private void addButtonActionPerformed(ActionEvent evt) throws SQLException {
         if(!fieldsFilled()) {
             JOptionPane.showMessageDialog(null, "Wszystkie pola muszą być uzupełnione!");
         } else {
             Student student;
-            DBManager dbm = new DBManager();
-            dbm.openConnection();
             student = new Student(nameTextField.getText(), cityTextField.getText(), levelTextField.getText(), lessonDateTextField.getText(), Double.parseDouble(priceTextField.getText()));
-            dbm.addStudent(student);
+            studentRepository.addStudent(student);
             JOptionPane.showMessageDialog(null, "Pomyślnie dodano nowego ucznia!");
             this.setVisible(false);
         }

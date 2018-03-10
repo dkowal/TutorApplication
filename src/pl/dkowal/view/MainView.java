@@ -1,17 +1,26 @@
 package pl.dkowal.view;
 
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import pl.dkowal.model.FilesPath;
 import pl.dkowal.model.Lesson;
 import pl.dkowal.model.Student;
+import pl.dkowal.repository.FilesPathRepository;
+import pl.dkowal.repository.FilesPathRepositoryImpl;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +53,8 @@ public class MainView extends javax.swing.JFrame {
     private Student student;
     private JFileChooser fileChooser = new JFileChooser();
     private javax.swing.JButton selectedItemButton;
+    private FilesPathRepository filesPathRepository;
+    private FilesPath filesPath;
 
 
     public MainView(Lesson lesson, Student student) {
@@ -52,6 +63,11 @@ public class MainView extends javax.swing.JFrame {
         initComponents();
         dateLabel.getText().substring(0,10);
         setTitle(student.getName() + ": " + lesson.getLessonName());
+        this.setLocationRelativeTo(null);
+    }
+
+    private void onLoad() {
+        //TODO LOAD FIELDS + FILES WITHOUT FILEPATH TABLE IN DATABASE
     }
 
     private void initComponents() {
@@ -81,6 +97,17 @@ public class MainView extends javax.swing.JFrame {
         menuHelp = new javax.swing.JMenu();
         menuHelp_HELP = new javax.swing.JMenuItem();
         selectedItemButton = new javax.swing.JButton();
+
+        menuHelp_HELP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    choosePDFToCutButtonActionPerformed(actionEvent);
+                } catch (IOException e) {
+                    System.out.println("menuHELP Exception: " + e.getMessage());
+                }
+            }
+        });
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -116,6 +143,18 @@ public class MainView extends javax.swing.JFrame {
         jScrollPane2.setViewportView(filesList);
 
         saveAllButton.setText("Zapisz wszystkie zmiany");
+        saveAllButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    saveAllButtonActionPerformed(actionEvent);
+                } catch (IOException e) {
+                    System.out.println("SaveAllButton Ex: " + e.getMessage());
+                } catch (SQLException e) {
+                    System.out.println("SaveAllButton Ex: " + e.getMessage());
+                }
+            }
+        });
         selectedItemButton.setText("Wybierz strony z pliku");
         selectedItemButton.addActionListener(new ActionListener() {
             @Override
@@ -240,25 +279,34 @@ public class MainView extends javax.swing.JFrame {
         pack();
     }
 
+    private void saveAllButtonActionPerformed(ActionEvent actionEvent) throws IOException, SQLException {
+        List<File> paths = new ArrayList<>();
+        for (int i = 0; i < listModel.getSize(); i++)
+            paths.add(new File(listModel.get(i).toString()));
+        String path = "C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/";
+        File dirStud = new File("c:/data/Files/" + student.getId());
+        if(!dirStud.exists()) dirStud.mkdir();
+        File dirLess;
+        if(dirStud.exists())  {
+            dirLess = new File(dirStud.getPath() + "/" + lesson.getId());
+            dirLess.mkdir();
+        }
+        for(File file : paths) {
+            Files.copy(file.toPath(), (new File(path + file.getName())).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            FilesPath filesPath = new FilesPath();
+            filesPath.setStud_id(student.getId());
+            filesPath.setLesson_id(lesson.getId());
+            filesPath.setPath(file.toPath().toString());
+            filesPathRepository = new FilesPathRepositoryImpl();
+            filesPathRepository.addFilePath(filesPath);
+        }
+    }
+
     private void selectedItemButtonActionPerformed(ActionEvent e) throws IOException {
         File file = new File(listModel.get(filesList.getSelectedIndex()).toString());
-//        Desktop desktop = Desktop.getDesktop();
-//        if(file.exists()) desktop.open(file);
-        PDDocument doc = PDDocument.load(file);
-        int count = doc.getNumberOfPages();
-        System.out.println(count);
+        Desktop desktop = Desktop.getDesktop();
+        if(file.exists()) desktop.open(file);
 
-        Splitter splitter = new Splitter();
-        List<PDDocument> pages = splitter.split(doc);
-
-//        File file2 = new File("C:/Users/Dawid/Downloads/sample2.pdf");
-//        PDFMergerUtility ut = new PDFMergerUtility();
-//        ut.addSource(file2);
-//        ut.addSource(file);
-//        ut.setDestinationFileName("C:/Users/Dawid/Downloads/sample_merged.pdf");
-//        ut.mergeDocuments();
-
-        doc.close();
     }
 
     private void examCheckBoxStateChanged(ItemEvent e) {
@@ -280,47 +328,42 @@ public class MainView extends javax.swing.JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setMultiSelectionEnabled(true);
 
-        int tmp = fileChooser.showDialog(rootPane, "Dodaj materiały");
 
-        if (tmp == JFileChooser.APPROVE_OPTION)
-        {
+        int tmp = fileChooser.showDialog(rootPane, "Dodaj materiały");
+        if (tmp == JFileChooser.APPROVE_OPTION) {
             File[] paths = fileChooser.getSelectedFiles();
 
             for (int i = 0; i < paths.length; i++) {
-                if (!duplitaceFiles(paths[i].getPath()))
+                if (!duplitaceFiles(paths[i].getPath())) {
                     listModel.addElement(paths[i]);
-                System.out.println(paths[i]);
+                }
+                System.out.println("Added path: " + paths[i]);
             }
 
         }
 
     }
 
-    private boolean duplitaceFiles(String testedFile)
-    {
+    private boolean duplitaceFiles(String testedFile) {
         for (int i = 0; i < listModel.getSize(); i++)
             if (((File)listModel.get(i)).getPath().equals(testedFile))
                 return true;
 
         return false;
     }
-    private DefaultListModel listModel = new DefaultListModel()
-    {
+    private DefaultListModel listModel = new DefaultListModel() {
         @Override
-        public void addElement(Object obj)
-        {
+        public void addElement(Object obj) {
             filesList.add(obj);
             super.addElement(((File)obj).getName());
         }
         @Override
-        public Object get(int index)
-        {
+        public Object get(int index) {
             return filesList.get(index);
         }
 
         @Override
-        public Object remove(int index)
-        {
+        public Object remove(int index) {
             filesList.remove(index);
             return super.remove(index);
         }
@@ -328,6 +371,93 @@ public class MainView extends javax.swing.JFrame {
     };
 
 
+    private void choosePDFToCutButtonActionPerformed(ActionEvent e) throws IOException {
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF files", "pdf");
+        fileChooser.setFileFilter(filter);
+        fileChooser.addChoosableFileFilter(filter);
 
+        int tmp = fileChooser.showDialog(rootPane, "Wybierz książkę PDF");
+        if (tmp == JFileChooser.APPROVE_OPTION) {
+            File pdfFile = fileChooser.getSelectedFile();
+            new PageChooser(this, true).setVisible(true);
+            File cuttedPDF = cutPDF(pdfFile, from, to, "C:\\data\\Files\\");
+            listModel.addElement(cuttedPDF);
+        }
 
+    }
+    private File cutPDF(File file, int from, int to, String path) throws IOException {
+        int counter = 1;
+        String fileName = getFileName(file);
+
+        PDDocument doc = PDDocument.load(file);
+
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(from);
+        splitter.setEndPage(to);
+        List<PDDocument> pages = splitter.split(doc);
+        List<File> splittedFiles = new ArrayList<>();
+        for(PDDocument fileInPages : pages) {
+            fileInPages.save(path + "sample" + counter + ".pdf");
+            File pliczek = new File(path + "sample" + counter + ".pdf");
+            splittedFiles.add(pliczek);
+            counter++;
+        }
+        PDFMergerUtility ut = new PDFMergerUtility();
+        for (File splittedFile : splittedFiles) {
+            ut.addSource(splittedFile);
+        }
+        String dest = path + fileName + "_str" + from + "-" + to + ".pdf";
+        ut.setDestinationFileName(dest);
+        ut.mergeDocuments(null);
+
+        File newFile = new File(dest);
+        for (File splittedFile : splittedFiles) {
+            Files.deleteIfExists(splittedFile.toPath());
+        }
+        return newFile;
+    }
+
+    private static String getFileName(File file) {
+        String fileName = file.getName();
+        int pos = fileName.lastIndexOf(".");
+        if (pos > 0 && pos < (fileName.length() - 1)) {
+            fileName = fileName.substring(0, pos);
+        }
+        return fileName;
+    }
+    private int from, to;
+    private class PageChooser extends JDialog {
+        JTextField fromInner = new JTextField("from");
+        JTextField toInner = new JTextField("to");
+        JButton select = new JButton("Wybierz");
+        public PageChooser(MainView parent, boolean modal) {
+            super(parent, modal);
+            this.setTitle("Strony");
+            initComponents();
+        }
+        private void initComponents() {
+            select.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    selectButtonActionPerformed(actionEvent);
+                }
+            });
+            this.setLocationRelativeTo(null);
+            fromInner.setSize(100, 50);
+            toInner.setSize(100, 50);
+            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+            getContentPane().setLayout(layout);
+            layout.setVerticalGroup(layout.createSequentialGroup().addComponent(fromInner).addComponent(toInner).addComponent(select));
+            layout.setHorizontalGroup(layout.createParallelGroup().addGroup(layout.createParallelGroup().addComponent(fromInner).addComponent(toInner).addComponent(select)));
+            pack();
+        }
+        void selectButtonActionPerformed (ActionEvent e) {
+            from = Integer.parseInt(fromInner.getText());
+            to = Integer.parseInt(toInner.getText());
+            this.setVisible(false);
+        }
+    }
 }
