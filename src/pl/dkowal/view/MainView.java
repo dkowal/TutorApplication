@@ -3,11 +3,10 @@ package pl.dkowal.view;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import pl.dkowal.model.FilesPath;
 import pl.dkowal.model.Lesson;
 import pl.dkowal.model.Student;
-import pl.dkowal.repository.FilesPathRepository;
-import pl.dkowal.repository.FilesPathRepositoryImpl;
+import pl.dkowal.repository.LessonRepository;
+import pl.dkowal.repository.LessonRepositoryImpl;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -19,7 +18,6 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +40,7 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuEdit_ADDSTUDENT;
     private javax.swing.JMenuItem menuEdit_DELETELESSON;
     private javax.swing.JMenuItem menuEdit_EDITSTUDENT;
+    private javax.swing.JMenuItem menuFile_ATACHFILE;
     private javax.swing.JPopupMenu.Separator menuEdit_SEPARATOR;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenuItem menuFile_EXIT;
@@ -53,8 +52,7 @@ public class MainView extends javax.swing.JFrame {
     private Student student;
     private JFileChooser fileChooser = new JFileChooser();
     private javax.swing.JButton selectedItemButton;
-    private FilesPathRepository filesPathRepository;
-    private FilesPath filesPath;
+    private LessonRepository lessonRepository;
 
 
     public MainView(Lesson lesson, Student student) {
@@ -94,11 +92,16 @@ public class MainView extends javax.swing.JFrame {
         menuEdit_SEPARATOR = new javax.swing.JPopupMenu.Separator();
         menuEdit_ADDLESSON = new javax.swing.JMenuItem();
         menuEdit_DELETELESSON = new javax.swing.JMenuItem();
+        menuFile_ATACHFILE = new javax.swing.JMenuItem();
         menuHelp = new javax.swing.JMenu();
         menuHelp_HELP = new javax.swing.JMenuItem();
         selectedItemButton = new javax.swing.JButton();
 
-        menuHelp_HELP.addActionListener(new ActionListener() {
+        File lessonFiles = new File("C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/");
+        if(lessonFiles.exists())
+            listFilesForFolder(lessonFiles);
+
+        menuFile_ATACHFILE.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
@@ -114,6 +117,9 @@ public class MainView extends javax.swing.JFrame {
         dateLabel.setText("Data lekcji: " + lesson.getDate().substring(0,10));
         hourLabel.setText("Godzina zajęć: " + lesson.getDate().substring(10, 16));
         topicTextField.setText(lesson.getTopic());
+        contentTextArea.setText(lesson.getContent());
+        if(lesson.isExam())
+            examCheckBox.setSelected(true);
 
         contentTextArea.setColumns(20);
         contentTextArea.setRows(5);
@@ -155,7 +161,7 @@ public class MainView extends javax.swing.JFrame {
                 }
             }
         });
-        selectedItemButton.setText("Wybierz strony z pliku");
+        selectedItemButton.setText("Otwórz zaznaczony plik");
         selectedItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -168,34 +174,49 @@ public class MainView extends javax.swing.JFrame {
         });
 
         menuFile.setText("Plik");
-
+        menuFile_ATACHFILE.setText("Wybierz książkę");
+        menuFile.add(menuFile_ATACHFILE);
         menuFile_EXIT.setText("Wyjście");
+        menuFile_EXIT.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
         menuFile.add(menuFile_EXIT);
-
         menu.add(menuFile);
 
         menuEdit.setText("Edycja");
-
         menuEdit_ADDSTUDENT.setText("Dodaj ucznia");
         menuEdit.add(menuEdit_ADDSTUDENT);
-
+        menuEdit_ADDSTUDENT.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new NewStudentView(new WelcomeView(), true).setVisible(true);
+            }
+        });
         menuEdit_EDITSTUDENT.setText("Edytuj dane ucznia");
         menuEdit.add(menuEdit_EDITSTUDENT);
         menuEdit.add(menuEdit_SEPARATOR);
-
         menuEdit_ADDLESSON.setText("Dodaj lekcję");
         menuEdit.add(menuEdit_ADDLESSON);
-
         menuEdit_DELETELESSON.setText("Usuń bieżącą lekcję");
         menuEdit.add(menuEdit_DELETELESSON);
-
+        menuEdit_DELETELESSON.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int dialogResult = JOptionPane.showConfirmDialog (null, "Czy na pewno chcesz usunąć tę lekcję?","Warning",dialogButton);
+                if(dialogResult == JOptionPane.YES_OPTION){
+                    lessonRepository.deleteLesson(lesson.getId());
+                }
+            }
+        });
         menu.add(menuEdit);
 
         menuHelp.setText("Pomoc");
-
         menuHelp_HELP.setText("Pomoc");
         menuHelp.add(menuHelp_HELP);
-
         menu.add(menuHelp);
 
         setJMenuBar(menu);
@@ -291,14 +312,19 @@ public class MainView extends javax.swing.JFrame {
             dirLess = new File(dirStud.getPath() + "/" + lesson.getId());
             dirLess.mkdir();
         }
-        for(File file : paths) {
-            Files.copy(file.toPath(), (new File(path + file.getName())).toPath(), StandardCopyOption.REPLACE_EXISTING);
-            FilesPath filesPath = new FilesPath();
-            filesPath.setStud_id(student.getId());
-            filesPath.setLesson_id(lesson.getId());
-            filesPath.setPath(file.toPath().toString());
-            filesPathRepository = new FilesPathRepositoryImpl();
-            filesPathRepository.addFilePath(filesPath);
+
+        lesson.setTopic(topicTextField.getText());
+        lesson.setContent(contentTextArea.getText());
+        lesson.setExam(examCheckBox.isSelected());
+        lessonRepository = new LessonRepositoryImpl();
+        lessonRepository.editLesson(lesson);
+        System.out.println(examCheckBox.isSelected());
+        for(int i = 0; i < paths.size(); i++) {
+            File source = new File(paths.get(i).getPath());
+            File destination = new File(path + "/" + paths.get(i).getName());
+            if (!destination.exists()) {
+                source.renameTo(destination);
+            }
         }
     }
 
@@ -458,6 +484,16 @@ public class MainView extends javax.swing.JFrame {
             from = Integer.parseInt(fromInner.getText());
             to = Integer.parseInt(toInner.getText());
             this.setVisible(false);
+        }
+    }
+    public void listFilesForFolder(final File folder) {
+        List<File> startFiles = new ArrayList<>();
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                listFilesForFolder(fileEntry);
+            } else {
+                listModel.addElement(fileEntry);
+            }
         }
     }
 }

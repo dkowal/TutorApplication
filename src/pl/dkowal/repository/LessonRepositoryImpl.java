@@ -32,6 +32,14 @@ public class LessonRepositoryImpl implements LessonRepository {
         }
         return lessons;
     }
+    @Override
+    public void deleteLesson(int lessonId) {
+        try {
+            stmt.execute("DELETE FROM LESSONS WHERE ID = " + lessonId);
+        } catch (SQLException e) {
+            System.out.println("SQLExpeption: " + e.getMessage());
+        }
+    }
 
     @Override
     public Lesson getLastLessonOfStudent(int studId) throws SQLException {
@@ -82,14 +90,15 @@ public class LessonRepositoryImpl implements LessonRepository {
     }
 
     @Override
-    public void editLesson(Lesson lesson) throws SQLException {
+    public void editLesson(Lesson lesson) {
         try {
             stmt.execute("UPDATE LESSONS SET " +
                     "date = '" + lesson.getDate() + "'," +
                     "topic = '" + lesson.getTopic() + "'," +
                     "content= '" + lesson.getContent() + "'," +
-                    "stud_id = " + lesson.getStudId() +
-                    "WHERE ID = " + lesson.getId());
+                    "stud_id = " + lesson.getStudId() + "," +
+                    "exam = " + lesson.isExam() +
+                    " WHERE ID = " + lesson.getId());
             System.err.println("Lesson saved successfully");
             System.err.println("lessonId: " + lesson.getId());
         } catch (SQLException e) {

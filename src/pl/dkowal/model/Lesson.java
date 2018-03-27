@@ -8,6 +8,7 @@ public class Lesson {
     private String content;
     private int studId;
     private String lessonName;
+    private boolean exam;
 
     public Lesson(String date, String topic, String content, int studId) {
         this.date = date;
@@ -15,6 +16,7 @@ public class Lesson {
         this.content = content;
         this.studId = studId;
     }
+
 
     public int getId() {
         return id;
@@ -43,6 +45,30 @@ public class Lesson {
         return studId;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setStudId(int studId) {
+        this.studId = studId;
+    }
+
+    public boolean isExam() {
+        return exam;
+    }
+
+    public void setExam(boolean exam) {
+        this.exam = exam;
+    }
+
     @Override
-    public String toString() {return lessonName; }
+    public String toString() {return lessonName + " [" + this.date.substring(0,10) + "]"; }
 }

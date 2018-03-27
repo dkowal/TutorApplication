@@ -12,7 +12,7 @@ public class ConnectionConfiguration{
             "name VARCHAR(20)," +
             "city VARCHAR(30)," +
             "level VARCHAR(5)," +
-            "lessonDate date," +
+            "lessonDate DATETIME," +
             "price DOUBLE)";
     private static final String CREATE_TABLE_LESSONS = "CREATE TABLE Lessons" +
             "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
@@ -20,12 +20,8 @@ public class ConnectionConfiguration{
             "topic VARCHAR(100)," +
             "content VARCHAR(1000)," +
             "stud_id INT," +
-            "lesson_name VARCHAR(15))";
-    private static final String CREATE_TABLE_PATHS = "CREATE TABLE FilePaths" +
-            "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-            "stud_id INT," +
-            "lesson_id INT," +
-            "path VARCHAR(500))";
+            "lesson_name VARCHAR(15)," +
+            "exam BOOLEAN)";
 
     public static void createTables() throws ClassNotFoundException, SQLException {
         Connection connection;
@@ -33,8 +29,6 @@ public class ConnectionConfiguration{
         Class.forName(JDBC_DRIVER);
         connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
         stmt = connection.createStatement();
-        if(stmt.execute(CREATE_TABLE_PATHS))
-            System.out.println("Created table Paths");
         if(stmt.execute(CREATE_TABLE))
             System.out.println("Created table Students");
         if(stmt.execute(CREATE_TABLE_LESSONS))
