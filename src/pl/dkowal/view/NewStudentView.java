@@ -27,6 +27,8 @@ public class NewStudentView extends JDialog {
 
     public NewStudentView(WelcomeView parent, boolean modal) {
         super(parent, modal);
+        setResizable(false);
+        setTitle("Nowy uczeń");
         initComponents();
         this.setLocationRelativeTo(null);
     }

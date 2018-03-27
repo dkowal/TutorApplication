@@ -34,6 +34,8 @@ public class WelcomeView extends javax.swing.JFrame {
         initComponents();
     }
     private void initComponents() {
+        setResizable(false);
+        setTitle("Wybierz ucznia/lekcę");
         lessonRepository = new LessonRepositoryImpl();
         studentRepository = new StudentRepositoryImpl();
 

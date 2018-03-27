@@ -56,6 +56,7 @@ public class MainView extends javax.swing.JFrame {
 
 
     public MainView(Lesson lesson, Student student) {
+        setResizable(false);
         this.lesson = lesson;
         this.student = student;
         initComponents();
