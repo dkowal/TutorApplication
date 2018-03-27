@@ -18,4 +18,4 @@ Main View Option:
 
 Lessons and Students stored in H2 database locally using JDBC
 
-Available JAR file for downloading and using on local computer
+Available JAR file for downloading and using on local computer: TutorApplication.jar
