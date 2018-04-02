@@ -4,12 +4,13 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import pl.dkowal.model.Lesson;
+import pl.dkowal.model.PDFManager;
 import pl.dkowal.model.Student;
 import pl.dkowal.repository.LessonRepository;
 import pl.dkowal.repository.LessonRepositoryImpl;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,36 +23,36 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainView extends javax.swing.JFrame {
-    private javax.swing.JButton addExamButton;
-    private javax.swing.JButton addFilesButton;
-    private javax.swing.JTextArea contentTextArea;
-    private javax.swing.JLabel dateLabel;
-    private javax.swing.JCheckBox examCheckBox;
-    private javax.swing.JList examFilesList;
-    private javax.swing.JList filesList;
-    private javax.swing.JLabel hourLabel;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JMenuBar menu;
-    private javax.swing.JMenu menuEdit;
-    private javax.swing.JMenuItem menuEdit_ADDLESSON;
-    private javax.swing.JMenuItem menuEdit_ADDSTUDENT;
-    private javax.swing.JMenuItem menuEdit_DELETELESSON;
-    private javax.swing.JMenuItem menuEdit_EDITSTUDENT;
-    private javax.swing.JMenuItem menuFile_ATACHFILE;
-    private javax.swing.JPopupMenu.Separator menuEdit_SEPARATOR;
-    private javax.swing.JMenu menuFile;
-    private javax.swing.JMenuItem menuFile_EXIT;
-    private javax.swing.JMenu menuHelp;
-    private javax.swing.JMenuItem menuHelp_HELP;
-    private javax.swing.JButton saveAllButton;
-    private javax.swing.JTextField topicTextField;
+public class MainView extends JFrame {
+    private JButton addExamButton;
+    private JButton addFilesButton;
+    private JTextArea contentTextArea;
+    private JLabel dateLabel;
+    private JCheckBox examCheckBox;
+    private JList examFilesList;
+    private JList filesList;
+    private JLabel hourLabel;
+    private JScrollPane jScrollPane1;
+    private JScrollPane jScrollPane2;
+    private JScrollPane jScrollPane3;
+    private JMenuBar menu;
+    private JMenu menuEdit;
+    private JMenuItem menuEdit_ADDLESSON;
+    private JMenuItem menuEdit_ADDSTUDENT;
+    private JMenuItem menuEdit_DELETELESSON;
+    private JMenuItem menuEdit_EDITSTUDENT;
+    private JMenuItem menuFile_ATACHFILE;
+    private JPopupMenu.Separator menuEdit_SEPARATOR;
+    private JMenu menuFile;
+    private JMenuItem menuFile_EXIT;
+    private JMenu menuHelp;
+    private JMenuItem menuHelp_HELP;
+    private JButton saveAllButton;
+    private JTextField topicTextField;
     private Lesson lesson;
     private Student student;
     private JFileChooser fileChooser = new JFileChooser();
-    private javax.swing.JButton selectedItemButton;
+    private JButton selectedItemButton;
     private LessonRepository lessonRepository;
 
 
@@ -66,37 +67,37 @@ public class MainView extends javax.swing.JFrame {
     }
 
     private void onLoad() {
-        //TODO LOAD FIELDS + FILES WITHOUT FILEPATH TABLE IN DATABASE
+        //TODO LOAD FIELDS + FILES
     }
 
     private void initComponents() {
 
-        dateLabel = new javax.swing.JLabel();
-        topicTextField = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        contentTextArea = new javax.swing.JTextArea();
-        examCheckBox = new javax.swing.JCheckBox();
-        addExamButton = new javax.swing.JButton();
-        addFilesButton = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        filesList = new javax.swing.JList(listModel);
-        hourLabel = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        examFilesList = new javax.swing.JList<>();
-        saveAllButton = new javax.swing.JButton();
-        menu = new javax.swing.JMenuBar();
-        menuFile = new javax.swing.JMenu();
-        menuFile_EXIT = new javax.swing.JMenuItem();
-        menuEdit = new javax.swing.JMenu();
-        menuEdit_ADDSTUDENT = new javax.swing.JMenuItem();
-        menuEdit_EDITSTUDENT = new javax.swing.JMenuItem();
-        menuEdit_SEPARATOR = new javax.swing.JPopupMenu.Separator();
-        menuEdit_ADDLESSON = new javax.swing.JMenuItem();
-        menuEdit_DELETELESSON = new javax.swing.JMenuItem();
-        menuFile_ATACHFILE = new javax.swing.JMenuItem();
-        menuHelp = new javax.swing.JMenu();
-        menuHelp_HELP = new javax.swing.JMenuItem();
-        selectedItemButton = new javax.swing.JButton();
+        dateLabel = new JLabel();
+        topicTextField = new JTextField();
+        jScrollPane1 = new JScrollPane();
+        contentTextArea = new JTextArea();
+        examCheckBox = new JCheckBox();
+        addExamButton = new JButton();
+        addFilesButton = new JButton();
+        jScrollPane2 = new JScrollPane();
+        filesList = new JList(listModel);
+        hourLabel = new JLabel();
+        jScrollPane3 = new JScrollPane();
+        examFilesList = new JList<>();
+        saveAllButton = new JButton();
+        menu = new JMenuBar();
+        menuFile = new JMenu();
+        menuFile_EXIT = new JMenuItem();
+        menuEdit = new JMenu();
+        menuEdit_ADDSTUDENT = new JMenuItem();
+        menuEdit_EDITSTUDENT = new JMenuItem();
+        menuEdit_SEPARATOR = new JPopupMenu.Separator();
+        menuEdit_ADDLESSON = new JMenuItem();
+        menuEdit_DELETELESSON = new JMenuItem();
+        menuFile_ATACHFILE = new JMenuItem();
+        menuHelp = new JMenu();
+        menuHelp_HELP = new JMenuItem();
+        selectedItemButton = new JButton();
 
         File lessonFiles = new File("C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/");
         if(lessonFiles.exists())
@@ -222,81 +223,81 @@ public class MainView extends javax.swing.JFrame {
 
         setJMenuBar(menu);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                         .addComponent(examCheckBox)
                                                         .addComponent(addExamButton))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, 100)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(selectedItemButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(saveAllButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jScrollPane3, GroupLayout.PREFERRED_SIZE, 100, 100)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                        .addComponent(selectedItemButton, GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(saveAllButton, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(dateLabel)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addComponent(hourLabel))
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(topicTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(addFilesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addComponent(topicTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(addFilesButton, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 400, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                                 .addGap(0, 0, Short.MAX_VALUE)))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {dateLabel, jScrollPane1, topicTextField});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {dateLabel, jScrollPane1, topicTextField});
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addExamButton, examCheckBox, jScrollPane3});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {addExamButton, examCheckBox, jScrollPane3});
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addFilesButton, hourLabel, jScrollPane2, saveAllButton, selectedItemButton});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {addFilesButton, hourLabel, jScrollPane2, saveAllButton, selectedItemButton});
 
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                                         .addComponent(dateLabel)
                                         .addComponent(hourLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(topicTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(topicTextField, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
                                         .addComponent(addFilesButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                        .addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                 .addComponent(examCheckBox)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(addExamButton))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(jScrollPane3, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(selectedItemButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(selectedItemButton, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                                                 .addComponent(saveAllButton)))
                                                 .addGap(10, 10, 10))))
         );
 
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addFilesButton, dateLabel, examCheckBox, hourLabel, topicTextField});
+        layout.linkSize(SwingConstants.VERTICAL, new Component[] {addFilesButton, dateLabel, examCheckBox, hourLabel, topicTextField});
 
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jScrollPane1, jScrollPane2});
+        layout.linkSize(SwingConstants.VERTICAL, new Component[] {jScrollPane1, jScrollPane2});
 
         pack();
     }
@@ -416,45 +417,10 @@ public class MainView extends javax.swing.JFrame {
 
     }
     private File cutPDF(File file, int from, int to, String path) throws IOException {
-        int counter = 1;
-        String fileName = getFileName(file);
-
-        PDDocument doc = PDDocument.load(file);
-
-        Splitter splitter = new Splitter();
-        splitter.setStartPage(from);
-        splitter.setEndPage(to);
-        List<PDDocument> pages = splitter.split(doc);
-        List<File> splittedFiles = new ArrayList<>();
-        for(PDDocument fileInPages : pages) {
-            fileInPages.save(path + "sample" + counter + ".pdf");
-            File pliczek = new File(path + "sample" + counter + ".pdf");
-            splittedFiles.add(pliczek);
-            counter++;
-        }
-        PDFMergerUtility ut = new PDFMergerUtility();
-        for (File splittedFile : splittedFiles) {
-            ut.addSource(splittedFile);
-        }
-        String dest = path + fileName + "_str" + from + "-" + to + ".pdf";
-        ut.setDestinationFileName(dest);
-        ut.mergeDocuments(null);
-
-        File newFile = new File(dest);
-        for (File splittedFile : splittedFiles) {
-            Files.deleteIfExists(splittedFile.toPath());
-        }
-        return newFile;
+        PDFManager pdfManager = new PDFManager();
+        return pdfManager.createSplittedPDFDOcument(file, from, to, path);
     }
 
-    private static String getFileName(File file) {
-        String fileName = file.getName();
-        int pos = fileName.lastIndexOf(".");
-        if (pos > 0 && pos < (fileName.length() - 1)) {
-            fileName = fileName.substring(0, pos);
-        }
-        return fileName;
-    }
     private int from, to;
     private class PageChooser extends JDialog {
         JTextField fromInner = new JTextField("from");
@@ -475,7 +441,7 @@ public class MainView extends javax.swing.JFrame {
             this.setLocationRelativeTo(null);
             fromInner.setSize(100, 50);
             toInner.setSize(100, 50);
-            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+            GroupLayout layout = new GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
             layout.setVerticalGroup(layout.createSequentialGroup().addComponent(fromInner).addComponent(toInner).addComponent(select));
             layout.setHorizontalGroup(layout.createParallelGroup().addGroup(layout.createParallelGroup().addComponent(fromInner).addComponent(toInner).addComponent(select)));
