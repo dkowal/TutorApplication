@@ -67,7 +67,9 @@ public class MainView extends JFrame {
     }
 
     private void onLoad() {
-        //TODO LOAD FIELDS + FILES
+        File lessonFiles = new File("C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/");
+        if(lessonFiles.exists())
+            listFilesForFolder(lessonFiles);
     }
 
     private void initComponents() {
@@ -98,10 +100,6 @@ public class MainView extends JFrame {
         menuHelp = new JMenu();
         menuHelp_HELP = new JMenuItem();
         selectedItemButton = new JButton();
-
-        File lessonFiles = new File("C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/");
-        if(lessonFiles.exists())
-            listFilesForFolder(lessonFiles);
 
         menuFile_ATACHFILE.addActionListener(new ActionListener() {
             @Override
@@ -306,21 +304,14 @@ public class MainView extends JFrame {
         List<File> paths = new ArrayList<>();
         for (int i = 0; i < listModel.getSize(); i++)
             paths.add(new File(listModel.get(i).toString()));
-        String path = "C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/";
-        File dirStud = new File("c:/data/Files/" + student.getId());
-        if(!dirStud.exists()) dirStud.mkdir();
-        File dirLess;
-        if(dirStud.exists())  {
-            dirLess = new File(dirStud.getPath() + "/" + lesson.getId());
-            dirLess.mkdir();
-        }
+        String path = buildPathForLesson();
 
         lesson.setTopic(topicTextField.getText());
         lesson.setContent(contentTextArea.getText());
         lesson.setExam(examCheckBox.isSelected());
         lessonRepository = new LessonRepositoryImpl();
         lessonRepository.editLesson(lesson);
-        System.out.println(examCheckBox.isSelected());
+
         for(int i = 0; i < paths.size(); i++) {
             File source = new File(paths.get(i).getPath());
             File destination = new File(path + "/" + paths.get(i).getName());
@@ -453,7 +444,7 @@ public class MainView extends JFrame {
             this.setVisible(false);
         }
     }
-    public void listFilesForFolder(final File folder) {
+    private void listFilesForFolder(final File folder) {
         List<File> startFiles = new ArrayList<>();
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -462,5 +453,16 @@ public class MainView extends JFrame {
                 listModel.addElement(fileEntry);
             }
         }
+    }
+
+    private String buildPathForLesson() {
+        File dirStud = new File("C:/data/Files/" + student.getId());
+        if(!dirStud.exists()) dirStud.mkdir();
+        File dirLess;
+        if(dirStud.exists())  {
+            dirLess = new File(dirStud.getPath() + "/" + lesson.getId());
+            dirLess.mkdir();
+        }
+        return "C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/";
     }
 }
