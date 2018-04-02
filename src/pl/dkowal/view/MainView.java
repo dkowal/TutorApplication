@@ -1,8 +1,5 @@
 package pl.dkowal.view;
 
-import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.multipdf.Splitter;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import pl.dkowal.model.Lesson;
 import pl.dkowal.model.PDFManager;
 import pl.dkowal.model.Student;
@@ -18,7 +15,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +57,14 @@ public class MainView extends JFrame {
         this.lesson = lesson;
         this.student = student;
         initComponents();
+        onLoad();
         dateLabel.getText().substring(0,10);
         setTitle(student.getName() + ": " + lesson.getLessonName());
         this.setLocationRelativeTo(null);
     }
 
     private void onLoad() {
-        File lessonFiles = new File("C:/data/Files/" + student.getId() + "/" + lesson.getId() + "/");
+        File lessonFiles = new File(buildPathForLesson());
         if(lessonFiles.exists())
             listFilesForFolder(lessonFiles);
     }
